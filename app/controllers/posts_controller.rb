@@ -1,9 +1,10 @@
 class PostsController < ApplicationController
   before_action :authenticate_user!, except: :index
   before_action :set_post, only: [:show, :edit, :update, :destroy]
+  before_action :validate_post_owner, only: [:edit, :update, :destroy]
 
   def index
-    @posts = Post.includes(:categories).all
+    @posts = Post.includes(:categories, :user).page(params[:page]).per(5)
   end
 
   def new
@@ -44,11 +45,18 @@ class PostsController < ApplicationController
 
  private
 
+  def validate_post_owner
+    unless @post.user == current_user
+      flash[:notice] = 'the post not belongs to you'
+      redirect_to posts_path
+   end
+ end
+
   def set_post
     @post = Post.find(params[:id])
   end
 
   def post_params
-    params.require(:post).permit(:title, :content, :address, category_ids: [])
+    params.require(:post).permit(:title, :content, :address, :image, category_ids: [])
  end
 end
