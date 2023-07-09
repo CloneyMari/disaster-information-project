@@ -7,7 +7,9 @@
      <td>address</td>
      <td>category</td>
      <td>user</td>
-  
+     <td>comments count</td>
+     <td>image</td>
+     <td>action</td>
    </thead>
   <% @posts.each do |post| %>
      <tr>
@@ -15,6 +17,7 @@
        <td><%= post.content %></td>
        <td><%= post.address %></td>
        <td><%= post.categories.pluck(:name).join(',') %></td>
+       <td><%= image_tag post.image.url if post.image.present? %></td>
        <td>
           <%= link_to 'Show', post_path(post) %>
           <%= link_to 'Edit', edit_post_path(post) if user_signed_in? && post.user == current_user %>
@@ -26,5 +29,6 @@
   <% end %>
 </table>
 
+ <%= paginate @posts %>
 <%= link_to 'New', new_post_path %>
 <%= link_to 'Category', new_category_path %>
